@@ -17,8 +17,7 @@ You must raise the function maximum timeout up to 300 seconds from the Hq dashbo
 
 import Bucket from "@spica-devkit/bucket";
 const fetch = require("node-fetch");
-import { database, ObjectId } from "@spica-devkit/database";
-
+import DB from "@spica-devkit/database";
 
 export async function receiver(req, res) {
     console.log("-----------Clone Start--------------");
@@ -153,7 +152,7 @@ async function deleteFunctions(HOST) {
 async function bucketOperations(newSchemas) {
     Bucket.initialize({ apikey: `${process.env.API_KEY}` });
     let oldSchemas = await Bucket.getAll().catch((e) => console.log("err getAll:", e));
-    const db = await database();
+    const db = await DB.database();
     let collection_buckets = db.collection("buckets");
 
     let willAdd = [];
@@ -182,7 +181,7 @@ async function bucketOperations(newSchemas) {
 
     for (let schema of willAdd) {
         await db.createCollection(`bucket_${schema._id}`);
-        schema._id = new ObjectId(schema._id);
+        schema._id = DB.ObjectId(schema._id);
         await collection_buckets.insertOne(schema);
     }
 
